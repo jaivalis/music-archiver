@@ -7,8 +7,7 @@ import sys
 
 import mutagen
 
-
-SUPPORTED_FORMATS = ['.flac', '.mp3', '.m4a', '.ogg']
+ALBUM_FORMAT = '${artist} - ${album} (${date})'
 
 METADATA_TRACK_TITLE = 'TIT2'
 TITLE_KEY = 'title'
@@ -19,14 +18,16 @@ TRACK_NUM_KEY = 'track.num'
 ARTIST_KEY = 'artist'
 
 
-def extract_album_title_formatted(uri: str) -> str:
-    _, extension = os.path.splitext(uri)
-    return extract_album_title_formatted_mp3(uri) if extension == ".mp3" else extract_album_title_formatted_flac(uri)
+def format_album(artist: str, album: str, date: str) -> str:
+    ret = ALBUM_FORMAT.replace('${artist}', artist)
+    ret = ret.replace('${album}', album)
+    ret = ret.replace('${date}', date)
+    return ret
 
-    
+
 def extract_album_title_formatted_mp3(uri: str) -> str:
     f = mutagen.File(uri)
-    return '{} - {} ({})'.format(str(f['TPE1']), str(f.tags['TALB']), str(f.tags['TDRC']))
+    return format_album(str(f['TPE1']), str(f.tags['TALB']), str(f.tags['TDRC']))
 
 
 def extract_album_title_formatted_flac(uri: str) -> str:
@@ -35,8 +36,30 @@ def extract_album_title_formatted_flac(uri: str) -> str:
     try:
         year = f.tags[YEAR_KEY][0]
     except KeyError:
-        year = f.tags['originaldate'][0]
-    return '{} - {} ({})'.format(f.tags[ARTIST_KEY][0], f.tags[ALBUM_KEY][0], year)
+        try:
+            year = f.tags['originaldate'][0]
+        except KeyError:
+            year = f.tags['date'][0]
+    return format_album(f.tags[ARTIST_KEY][0], f.tags[ALBUM_KEY][0], year)
+
+
+def extract_album_title_formatted_m4a(uri: str) -> str:
+    f = mutagen.File(uri)
+    return format_album(f.tags['©ART'][0], f.tags['©alb'][0], f.tags['©day'][0])
+
+
+SUPPORTED_FORMATS = ['.flac', '.mp3', '.m4a', '.ogg']
+ALBUM_TITLE_STRATEGY = {
+    '.flac': extract_album_title_formatted_flac,
+    '.m4a': extract_album_title_formatted_m4a,
+    '.mp3': extract_album_title_formatted_mp3,
+    '.ogg': extract_album_title_formatted_flac
+}
+
+
+def extract_album_title_formatted(uri: str) -> str:
+    _, extension = os.path.splitext(uri)
+    return ALBUM_TITLE_STRATEGY[extension](uri)
 
 
 def fingerprint_album(album_path: str) -> bool:
@@ -53,9 +76,9 @@ def type_filter(path: str, types):
     return pathlib.Path(path).suffix.lower() in types
 
 
-def get_album_dirs(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> list:
+def get_album_dirs(path: str) -> list:
     album_dirs = []
-    for path, _ in get_all_files(path, suffix_filter):
+    for path, _ in get_all_files(path):
         if path not in album_dirs:
             album_dirs.append(path)
     
@@ -63,13 +86,13 @@ def get_album_dirs(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> list:
     return album_dirs
 
 
-def get_all_files(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> dict:
-    print('Scanning folder \'%s\' for files of type(s) \'%s\'' % (path, suffix_filter))
+def get_all_files(path: str) -> dict:
+    print('Scanning folder \'%s\' for files of type(s) \'%s\'' % (path, SUPPORTED_FORMATS))
 
     for (path, _, files) in os.walk(path):
 
         for file in files:
-            if not type_filter(file, suffix_filter):
+            if not type_filter(file, SUPPORTED_FORMATS):
                 continue
 
             full_path = os.path.join(path, file)
