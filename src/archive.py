@@ -55,7 +55,7 @@ def type_filter(path: str, types):
 
 def get_album_dirs(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> list:
     album_dirs = []
-    for path, timestamp in get_all_files(path, suffix_filter):
+    for path, _ in get_all_files(path, suffix_filter):
         if path not in album_dirs:
             album_dirs.append(path)
     
@@ -77,7 +77,8 @@ def get_all_files(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> dict:
 
 
 def query_yes_no(question, default="yes"):
-    """Ask a yes/no question via raw_input() and return their answer.
+    """
+    Ask a yes/no question via raw_input() and return their answer.
 
     "question" is a string that is presented to the user.
     "default" is the presumed answer if the user just hits <Enter>.
@@ -162,7 +163,7 @@ def main(argv):
         
         suggested_name = extract_album_title_formatted(get_random_track_path(album_dir))
         artist = suggested_name.split(' - ')[0]
-        
+
         suggested_path = os.path.join(sorted_path, artist, suggested_name)
         input_path = os.path.join(input_path, album_dir)
         move_and_create_dir(input_path, suggested_path)
