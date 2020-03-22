@@ -66,7 +66,7 @@ def get_album_dirs(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> list:
 def get_all_files(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> dict:
     print('Scanning folder \'%s\' for files of type(s) \'%s\'' % (path, suffix_filter))
 
-    for (path, dirs, files) in os.walk(path):
+    for (path, _, files) in os.walk(path):
 
         for file in files:
             if not type_filter(file, suffix_filter):
@@ -77,8 +77,7 @@ def get_all_files(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> dict:
 
 
 def query_yes_no(question, default="yes"):
-    """
-    Ask a yes/no question via raw_input() and return their answer.
+    """Ask a yes/no question via raw_input() and return their answer.
 
     "question" is a string that is presented to the user.
     "default" is the presumed answer if the user just hits <Enter>.
@@ -131,7 +130,7 @@ def parse_args(argv):
     inputfile = ''
     outputfile = ''
     try:
-        opts, args = getopt.getopt(argv, "hi:o:", ["ifile=","ofile="])
+        opts, _ = getopt.getopt(argv, "hi:o:", ["ifile=","ofile="])
     except getopt.GetoptError:
         print('test.py -i <inputfile> -o <outputfile>')
         sys.exit(2)

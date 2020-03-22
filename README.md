@@ -18,7 +18,7 @@ The resulting structure will include a directory per artist and a directory unde
 (Audio file names are not altered.)
 
 The resulting structure in the directory pointed to is as follows:
-```
+``` console
 .
 ├── Kurt Vile
 │   └── Kurt Vile - Bottle It In (2018)
