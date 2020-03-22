@@ -31,7 +31,12 @@ def extract_album_title_formatted_mp3(uri: str) -> str:
 
 def extract_album_title_formatted_flac(uri: str) -> str:
     f = mutagen.File(uri)
-    return '{} - {} ({})'.format(f.tags[ARTIST_KEY][0], f.tags[ALBUM_KEY][0], f.tags[YEAR_KEY][0])
+    
+    try:
+        year = f.tags[YEAR_KEY][0]
+    except:
+        year = f.tags['originaldate'][0]
+    return '{} - {} ({})'.format(f.tags[ARTIST_KEY][0], f.tags[ALBUM_KEY][0], year)
 
 
 def fingerprint_album(album_path: str) -> bool:
