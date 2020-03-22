@@ -145,9 +145,9 @@ def main(argv):
     
     for album_dir in get_album_dirs(input_path):
         if not query_yes_no("Would you like to archive album directory '%s'?" % album_dir):
-            print("skipping")
             if query_yes_no("Would you like to stop? "):
                 break
+            continue
         
         print("processing %s" % album_dir)
         if fingerprint_album(album_dir):
