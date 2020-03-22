@@ -34,7 +34,7 @@ def extract_album_title_formatted_flac(uri: str) -> str:
     
     try:
         year = f.tags[YEAR_KEY][0]
-    except:
+    except KeyError:
         year = f.tags['originaldate'][0]
     return '{} - {} ({})'.format(f.tags[ARTIST_KEY][0], f.tags[ALBUM_KEY][0], year)
 
