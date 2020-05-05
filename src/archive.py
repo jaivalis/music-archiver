@@ -19,8 +19,8 @@ ARTIST_KEY = 'artist'
 
 
 def format_album(artist: str, album: str, date: str) -> str:
-    ret = ALBUM_FORMAT.replace('${artist}', artist)
-    ret = ret.replace('${album}', album)
+    ret = ALBUM_FORMAT.replace('${artist}', artist.replace("/", "-").replace(":", "-"))
+    ret = ret.replace('${album}', album.replace("/", "-").replace(":", "-"))
     ret = ret.replace('${date}', date)
     return ret
 
