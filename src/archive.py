@@ -6,6 +6,7 @@ import subprocess
 import sys
 
 import mutagen
+from tqdm import tqdm
 
 ALBUM_FORMAT = '${artist} - ${album} (${date})'
 
@@ -140,20 +141,66 @@ def get_random_track_path(path: str, suffix_filter: list = SUPPORTED_FORMATS) ->
             return os.path.join(path, file)
 
 
-def move_and_create_dir(source_path, target_dir) -> None:
-    if query_yes_no("Would you like to move %s to %s? " % (source_path, target_dir)):
-        if not os.path.isdir(target_dir):
-            os.makedirs(target_dir)
-        for file in os.listdir(source_path):
-            full_file_name = os.path.join(source_path, file)
-            shutil.move(full_file_name, target_dir)
+def move_and_create_dir(album_source_path: str, sorted_path, artist, suggested_album_title: str) -> None:
+    album_destination_path = os.path.join(sorted_path, artist, suggested_album_title)
+    if query_yes_no("Would you like to move %s to %s? " % (album_source_path, album_destination_path)):
+        if not os.path.isdir(album_destination_path):
+            os.makedirs(album_destination_path)
+
+        clear_existing_tracks(sorted_path, artist, suggested_album_title)
+
+        for file in tqdm(os.listdir(album_source_path)):
+            full_file_name = os.path.join(album_source_path, file)
+            shutil.move(full_file_name, album_destination_path)
+
+
+def clear_existing_tracks(sorted_path: str, artist: str, suggested_album_title: str) -> None:
+    existing_album_paths = get_existing_library_album_paths(sorted_path, artist, suggested_album_title)
+
+    for existing_album_path in existing_album_paths:
+        music_files = []
+        populated = False
+        for file in os.listdir(existing_album_path):
+            if pathlib.Path(file).suffix.lower() not in SUPPORTED_FORMATS:
+                continue
+            populated = True
+            music_files.append(os.path.join(existing_album_path, file))
+            print("\t" + file)
+        
+        if populated and query_yes_no("Delete found existing files first?"):
+            for music_file in tqdm(music_files):
+                remove_file(music_file)
+
+
+def get_existing_library_album_paths(sorted_path, artist, suggested_album_title: str) -> list:
+    """
+    Looks for possible existing albums in the library
+    :param sorted_path:
+    :param artist:
+    :param suggested_album_title:
+    :return:
+    """
+    ret = []
+    # TODO, add more permutations here, consider stripping the date & year:
+    permutations = [os.path.join(sorted_path, artist, suggested_album_title)]
+    for permutation in permutations:
+        if os.path.isdir(permutation):
+            ret.append(os.path.join(sorted_path, artist, suggested_album_title))
+    return ret
+
+
+def remove_file(path) -> None:
+    if os.path.exists(path):
+        os.remove(path)
+    else:
+        print("The file does not exist")
 
 
 def parse_args(argv):
-    inputfile = ''
-    outputfile = ''
+    input_file = ''
+    output_file = ''
     try:
-        opts, _ = getopt.getopt(argv, "hi:o:", ["ifile=","ofile="])
+        opts, _ = getopt.getopt(argv, "hi:o:", ["ifile=", "ofile="])
     except getopt.GetoptError:
         print('test.py -i <inputfile> -o <outputfile>')
         sys.exit(2)
@@ -162,19 +209,19 @@ def parse_args(argv):
             print('test.py -i <inputfile> -o <outputfile>')
             sys.exit()
         elif opt in ("-i", "--ifile"):
-            inputfile = arg
+            input_file = arg
         elif opt in ("-o", "--ofile"):
-            outputfile = arg
-    return inputfile, outputfile
+            output_file = arg
+    return input_file, output_file
 
 
 def main(argv):
     input_path, sorted_path = parse_args(sys.argv[1:])
     
     for album_dir in get_album_dirs(input_path):
-        if not query_yes_no("Would you like to archive album directory '%s'?" % album_dir):
-            if query_yes_no("Would you like to stop? "):
-                break
+        if not query_yes_no("Archive album directory '%s'?" % album_dir):
+            if query_yes_no("Delete album directory? '%s'?" % album_dir):
+                shutil.rmtree(album_dir, ignore_errors=True)
             continue
         
         print("processing %s" % album_dir)
@@ -183,12 +230,12 @@ def main(argv):
         else:
             print("Files not modified.")
         
-        suggested_name = extract_album_title_formatted(get_random_track_path(album_dir))
-        artist = suggested_name.split(' - ')[0]
+        suggested_album_title = extract_album_title_formatted(get_random_track_path(album_dir))
+        artist = suggested_album_title.split(' - ')[0]
 
-        suggested_path = os.path.join(sorted_path, artist, suggested_name)
+        # album_destination_path = os.path.join(sorted_path, artist, suggested_album_title)
         input_path = os.path.join(input_path, album_dir)
-        move_and_create_dir(input_path, suggested_path)
+        move_and_create_dir(input_path, sorted_path, artist, suggested_album_title)
 
 
 if __name__ == "__main__":
