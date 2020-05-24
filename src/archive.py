@@ -4,6 +4,7 @@ import pathlib
 import shutil
 import subprocess
 import sys
+import re
 
 import mutagen
 from tqdm import tqdm
@@ -181,11 +182,14 @@ def get_existing_library_album_paths(sorted_path, artist, suggested_album_title:
     :return:
     """
     ret = []
-    # TODO, add more permutations here, consider stripping the date & year:
-    permutations = [os.path.join(sorted_path, artist, suggested_album_title)]
-    for permutation in permutations:
-        if os.path.isdir(permutation):
-            ret.append(os.path.join(sorted_path, artist, suggested_album_title))
+    artist_path = os.path.join(sorted_path, artist)
+    album_no_artist = suggested_album_title.split("-")[1].strip()
+    album_no_artist_no_date = re.sub(r"\(.*\)", "", album_no_artist)
+
+    for existing_album in os.listdir(artist_path):
+        if album_no_artist_no_date in existing_album:
+            ret.append(os.path.join(sorted_path, artist, existing_album))
+
     return ret
 
 
