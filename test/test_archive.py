@@ -1,5 +1,3 @@
-import unittest.mock as mock
-from unittest import TestCase, main
 import unittest
 from pyfakefs import fake_filesystem_unittest
 from archive.archive import *
@@ -7,7 +5,7 @@ import os
 
 
 class Test(fake_filesystem_unittest.TestCase):
-    
+
     def setUp(self):
         self.setUpPyfakefs()
     

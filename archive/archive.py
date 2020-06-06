@@ -34,7 +34,7 @@ def extract_album_title_formatted_mp3(uri: str) -> str:
 
 def extract_album_title_formatted_flac(uri: str) -> str:
     f = mutagen.File(uri)
-    
+
     try:
         year = f.tags[YEAR_KEY][0]
     except KeyError:
@@ -134,7 +134,7 @@ def query_yes_no(question, default="yes"):
 
 
 def get_random_track_path(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> str:
-    for (path, dirs, files) in os.walk(path):
+    for (path, _, files) in os.walk(path):
 
         for file in files:
             if not type_filter(file, suffix_filter):

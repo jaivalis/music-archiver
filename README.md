@@ -5,7 +5,7 @@ The downloads folder may contain multiple albums, it will be scanned as such and
 
 ## Use
 Two arguments need to be provided, the input and output directory:
-```
+``` console
 pip install -r requirements.txt
 python archive.py -i "${HOME}/Downloads/complete" -o ${HOME}/Music/Sorted
 ```
