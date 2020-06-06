@@ -1,14 +1,16 @@
-import unittest
-from pyfakefs import fake_filesystem_unittest
-from archive.archive import *
 import os
+import unittest
+
+from pyfakefs import fake_filesystem_unittest
+
+from archive.archive import format_album, get_existing_library_album_paths
 
 
 class Test(fake_filesystem_unittest.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-    
+
     def test_get_existing_library_album_paths(self):
         os.makedirs('/home/alpha')
         os.makedirs('/home/alpha/alpha - beta')
