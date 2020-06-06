@@ -1,7 +1,8 @@
 import unittest.mock as mock
-from unittest import TestCase
+from unittest import TestCase, main
+import unittest
 from pyfakefs import fake_filesystem_unittest
-from .archive import *
+from archive.archive import *
 import os
 
 
@@ -23,7 +24,6 @@ class Test(fake_filesystem_unittest.TestCase):
         self.assertTrue('/home/alpha/alpha - beta' in ret)
 
     def test_get_existing_library_album_paths_with_dash(self):
-        # self.fail()
         os.makedirs('/home/al-pha')
         os.makedirs('/home/al-pha/al-Pha - bet-a (2999)')
         os.makedirs('/home/al-pha/al-pha - title containing bet-a (2999)')
@@ -38,3 +38,7 @@ class Test(fake_filesystem_unittest.TestCase):
         self.assertTrue('/home/al-pha/al-pha-bet-a (2999)' in ret)
         self.assertTrue('/home/al-pha/bet-a' in ret)
         self.assertTrue('/home/al-pha/al-pha - title containing bet-a (2999)' not in ret)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -3,3 +3,4 @@ mutagen
 tqdm
 
 pyfakefs
+coverage
