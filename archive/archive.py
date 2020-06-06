@@ -241,7 +241,6 @@ def main(argv):
         suggested_album_title = extract_album_title_formatted(get_random_track_path(album_dir))
         artist = suggested_album_title.split(' - ')[0]
 
-        # album_destination_path = os.path.join(sorted_path, artist, suggested_album_title)
         input_path = os.path.join(input_path, album_dir)
         move_and_create_dir(input_path, sorted_path, artist, suggested_album_title)
 

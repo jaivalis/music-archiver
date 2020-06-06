@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   python: circleci/python@0.2.1
+  codecov: codecov/codecov@1.0.2
 
 jobs:
   build-and-test:
@@ -14,8 +15,16 @@ jobs:
       - run:
           command: python -m unittest discover
           name: Test
+  send-coverage-report:
+    steps:
+      - checkout
+      - "coverage run -m unittest discover"
+      - coverage-reporter/send_report
 
 workflows:
   main:
     jobs:
       - build-and-test
+  coverage-example:
+    jobs:
+      - send-coverage-report
