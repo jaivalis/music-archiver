@@ -20,7 +20,7 @@ jobs:
     steps:
       - checkout
       - python/install-deps
-      - run: coverage run -m unittest discover && coverage xml
+      - run: pip install coverage && coverage run -m unittest discover && coverage xml
       - coverage-reporter/send_report:
           coverage-reports: 'coverage.xml'
           project-token: $CODACY_PROJECT_TOKEN
