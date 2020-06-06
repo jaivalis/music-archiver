@@ -165,15 +165,16 @@ def clear_existing_tracks(sorted_path: str, artist: str, suggested_album_title: 
             if pathlib.Path(file).suffix.lower() not in SUPPORTED_FORMATS:
                 continue
             populated = True
-            music_files.append(os.path.join(existing_album_path, file))
-            print("\t" + file)
+            to_delete = os.path.join(existing_album_path, file)
+            music_files.append(to_delete)
+            print("\t" + to_delete)
         
         if populated and query_yes_no("Delete found existing files first?"):
             for music_file in tqdm(music_files):
                 remove_file(music_file)
 
 
-def get_existing_library_album_paths(sorted_path, artist, suggested_album_title: str) -> list:
+def get_existing_library_album_paths(sorted_path: str, artist: str, suggested_album_title: str) -> list:
     """
     Looks for possible existing albums in the library
     :param sorted_path:
@@ -183,17 +184,21 @@ def get_existing_library_album_paths(sorted_path, artist, suggested_album_title:
     """
     ret = []
     artist_path = os.path.join(sorted_path, artist)
-    album_no_artist = suggested_album_title.split("-")[1].strip()
-    album_no_artist_no_date = re.sub(r"\(.*\)", "", album_no_artist)
+    album_no_artist = suggested_album_title.split(artist + ' - ')[1].strip()
+    album_no_artist_no_date = re.sub(r"\(.*\)", "", album_no_artist).strip()
 
-    for existing_album in os.listdir(artist_path):
-        if album_no_artist_no_date in existing_album:
-            ret.append(os.path.join(sorted_path, artist, existing_album))
+    for existing_album_dir in os.listdir(artist_path):
+        album_no_artist = re.sub(artist, "", existing_album_dir, flags=re.IGNORECASE).strip(' -_')
+        existing_album_no_artist_no_date = re.sub(r"\(.*\)", "", album_no_artist).strip()
+        
+        print(existing_album_no_artist_no_date + ' <-- ' + existing_album_dir)
+        if existing_album_no_artist_no_date == album_no_artist_no_date:
+            ret.append(os.path.join(artist_path, existing_album_dir))
 
     return ret
 
 
-def remove_file(path) -> None:
+def remove_file(path: str) -> None:
     if os.path.exists(path):
         os.remove(path)
     else:

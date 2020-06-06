@@ -1,3 +1,5 @@
 pathlib
 mutagen
 tqdm
+
+pyfakefs
