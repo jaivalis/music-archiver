@@ -13,50 +13,22 @@ jobs:
       - python/load-cache
       - python/install-deps
       - python/save-cache
-      - run:
-          command: python -m unittest discover
-          name: Test
 
   codacy-coverage-report:
     docker:
-      - image: 'circleci/python:3.7'
+      - image: 'circleci/openjdk:python:3.7'
     steps:
-      - checkout
-      - run:
-          - name: Testing application
-            command: coverage run -m unittest discover
-            shell: /bin/bash
-            working_directory: ~/music-archiver
-#            no_output_timeout: 30m
-#            environment:
-#              FOO: bar
-      - run:
-          - name: Testing application
-            command: coverage html
-            shell: /bin/bash
-            working_directory: ~/music-archiver
-      - coverage-reporter/send_report:
-          coverage-reports: '.coverage,htmlcov/*'
-          project-token: $CODACY_PROJECT_TOKEN
-
       - checkout
       - run commands to generate the coverage result
       - coverage-reporter/send_report:
-          coverage-reports: 'htmlcov/*'
+          coverage-reports: 'report.xml,coverage.info'
           project-token: $CODACY_PROJECT_TOKEN
-
-#  send-coverage-report:
-#    docker:
-#      - image: 'circleci/python:3.7'
-#    steps:
-#      - checkout
-#      - "coverage report -m"
-#      - coverage-reporter/send_report
 
 workflows:
   main:
     jobs:
       - build-and-test
+      - codacy-coverage-report
   coverage-example:
     jobs:
       - codacy-coverage-report
