@@ -22,8 +22,19 @@ jobs:
       - image: 'circleci/python:3.7'
     steps:
       - checkout
-      - "coverage run -m unittest discover"
-      - "coverage html"
+      - run:
+        - name: Testing application
+          command: coverage run -m unittest discover
+          shell: /bin/bash
+          working_directory: ~/music-archiver
+#            no_output_timeout: 30m
+#            environment:
+#              FOO: bar
+      - run:
+        - name: Testing application
+          command: coverage html
+          shell: /bin/bash
+          working_directory: ~/music-archiver
       - coverage-reporter/send_report:
           coverage-reports: '.coverage,htmlcov/*'
           project-token: $CODACY_PROJECT_TOKEN
