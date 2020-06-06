@@ -48,5 +48,5 @@ workflows:
       - build-and-test
   coverage-example:
     jobs:
-      - send-coverage-report
+      - codacy-coverage-report
 
