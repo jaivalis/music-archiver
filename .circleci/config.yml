@@ -33,4 +33,3 @@ workflows:
   coverage-example:
     jobs:
       - codacy-coverage-report
-
