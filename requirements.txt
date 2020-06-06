@@ -3,5 +3,5 @@ mutagen
 tqdm
 
 pyfakefs
-# codacy-coverage
+codacy-coverage
 pycobertura
