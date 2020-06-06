@@ -19,9 +19,9 @@ jobs:
       - image: 'circleci/openjdk:python:3.7'
     steps:
       - checkout
-      - run commands to generate the coverage result
+      - "coverage run -m unittest discover && coverage xml"
       - coverage-reporter/send_report:
-          coverage-reports: 'report.xml,coverage.info'
+          coverage-reports: 'coverage.xml'
           project-token: $CODACY_PROJECT_TOKEN
 
 workflows:
