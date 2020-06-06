@@ -42,3 +42,4 @@ workflows:
   coverage-example:
     jobs:
       - send-coverage-report
+
