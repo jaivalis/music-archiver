@@ -191,7 +191,6 @@ def get_existing_library_album_paths(sorted_path: str, artist: str, suggested_al
         album_no_artist = re.sub(artist, "", existing_album_dir, flags=re.IGNORECASE).strip(' -_')
         existing_album_no_artist_no_date = re.sub(r"\(.*\)", "", album_no_artist).strip()
         
-        print(existing_album_no_artist_no_date + ' <-- ' + existing_album_dir)
         if existing_album_no_artist_no_date == album_no_artist_no_date:
             ret.append(os.path.join(artist_path, existing_album_dir))
 
