@@ -1,4 +1,8 @@
 # music-archiver
+[![CircleCI](https://circleci.com/gh/jaivalis/music-archiver.svg?style=shield)](https://circleci.com/gh/jaivalis/music-archiver)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/c8dc1fb06fad400cb2e4ad0307b45a58)](https://www.codacy.com/manual/jaivalis/music-archiver?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=jaivalis/music-archiver&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/c8dc1fb06fad400cb2e4ad0307b45a58)](https://www.codacy.com/manual/jaivalis/music-archiver?utm_source=github.com&utm_medium=referral&utm_content=jaivalis/music-archiver&utm_campaign=Badge_Coverage)
+
 Utility used to tag and archive downloaded **albums** to library.
 Point to a downloads folder and to a sorted library target directory.
 The downloads folder may contain multiple albums, it will be scanned as such and tag them in order of modification.
