@@ -82,7 +82,7 @@ def get_album_dirs(path: str) -> list:
     for path, _ in get_all_files(path):
         if path not in album_dirs:
             album_dirs.append(path)
-    
+
     album_dirs.sort(key=lambda x: os.path.getmtime(x), reverse=True)
     return album_dirs
 
