@@ -68,9 +68,10 @@ def fingerprint_album(album_path: str) -> bool:
     random_track_path = get_random_track_path(album_path)
     last_modified = os.path.getmtime(random_track_path)
     
-    devnull = open(os.devnull, 'w')
-    process = subprocess.Popen("picard '" + album_path + "'", shell=True, stdout=devnull, stderr=subprocess.STDOUT)
-    process.wait()
+    # devnull = open(os.devnull, 'w')
+    # process = subprocess.Popen("picard '" + album_path + "'", shell=True, stdout=devnull, stderr=subprocess.STDOUT)
+    subprocess.call(['picard', album_path])
+    # process.wait()
     return last_modified != os.path.getmtime(random_track_path)
 
 
@@ -102,7 +103,8 @@ def get_all_files(path: str) -> dict:
 
 
 def query_yes_no(question, default="yes"):
-    """Ask a yes/no question via raw_input() and return their answer.
+    """
+    Ask a yes/no question via raw_input() and return their answer.
 
     "question" is a string that is presented to the user.
     "default" is the presumed answer if the user just hits <Enter>.
@@ -177,6 +179,7 @@ def clear_existing_tracks(sorted_path: str, artist: str, suggested_album_title: 
 def get_existing_library_album_paths(sorted_path: str, artist: str, suggested_album_title: str) -> list:
     """
     Looks for possible existing albums in the library
+
     :param sorted_path:
     :param artist:
     :param suggested_album_title:
