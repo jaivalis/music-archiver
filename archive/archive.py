@@ -9,6 +9,7 @@ import re
 import mutagen
 from tqdm import tqdm
 
+PICARD_EXECUTABLE = '/usr/bin/picard'
 ALBUM_FORMAT = '${artist} - ${album} (${date})'
 
 METADATA_TRACK_TITLE = 'TIT2'
@@ -67,11 +68,8 @@ def extract_album_title_formatted(uri: str) -> str:
 def fingerprint_album(album_path: str) -> bool:
     random_track_path = get_random_track_path(album_path)
     last_modified = os.path.getmtime(random_track_path)
-    
-    # devnull = open(os.devnull, 'w')
-    # process = subprocess.Popen("picard '" + album_path + "'", shell=True, stdout=devnull, stderr=subprocess.STDOUT)
-    subprocess.call(['picard', album_path])
-    # process.wait()
+
+    subprocess.call([PICARD_EXECUTABLE, album_path])
     return last_modified != os.path.getmtime(random_track_path)
 
 
@@ -106,12 +104,11 @@ def query_yes_no(question, default="yes"):
     """
     Ask a yes/no question via raw_input() and return their answer.
 
-    "question" is a string that is presented to the user.
-    "default" is the presumed answer if the user just hits <Enter>.
+    :param question: is a string that is presented to the user.
+    :param default: is the presumed answer if the user just hits <Enter>.
         It must be "yes" (the default), "no" or None (meaning
         an answer is required of the user).
-
-    The "answer" return value is True for "yes" or False for "no".
+    :return: The "answer" return value is True for "yes" or False for "no".
     """
     valid = {"yes": True, "y": True, "ye": True,
              "no": False, "n": False}
@@ -135,7 +132,9 @@ def query_yes_no(question, default="yes"):
             sys.stdout.write("Please respond with 'yes' or 'no' (or 'y' or 'n').\n")
 
 
-def get_random_track_path(path: str, suffix_filter: list = SUPPORTED_FORMATS) -> str:
+def get_random_track_path(path: str, suffix_filter: list = None) -> str:
+    if suffix_filter is None:
+        suffix_filter = SUPPORTED_FORMATS
     for (path, _, files) in os.walk(path):
 
         for file in files:
